@@ -1,0 +1,16 @@
+import { Router } from "express";
+import * as c from "../controllers/userController.js";
+import { getCart, putCart } from "../controllers/cartController.js";
+import { authenticate, roles } from "../middleware/auth.js";
+export const userRoutes = Router();
+userRoutes.use(authenticate);
+userRoutes.get("/me", c.me);
+userRoutes.patch("/me", c.updateMe);
+userRoutes.post("/me/deletion-request", c.deleteRequest);
+userRoutes.get("/me/favorites", c.favorites);
+userRoutes.put("/me/favorites/:id", c.addFavorite);
+userRoutes.delete("/me/favorites/:id", c.removeFavorite);
+userRoutes.get("/me/notifications", c.notifications);
+userRoutes.patch("/me/notifications/:id/read", c.readNotification);
+userRoutes.get("/me/cart", roles("consumer"), getCart);
+userRoutes.put("/me/cart", roles("consumer"), putCart);

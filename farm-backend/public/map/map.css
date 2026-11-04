@@ -1,0 +1,21 @@
+html,
+body,
+#map {
+  height: 100%;
+  margin: 0;
+}
+#error {
+  position: absolute;
+  top: 8px;
+  left: 50px;
+  right: 8px;
+  z-index: 1000;
+  background: white;
+  color: #752e14;
+  font: 13px sans-serif;
+  border-radius: 6px;
+  padding: 4px;
+}
+#error:empty {
+  display: none;
+}

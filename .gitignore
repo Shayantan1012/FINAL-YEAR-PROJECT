@@ -1,0 +1,41 @@
+# Dependencies and local tooling
+node_modules/
+.tools/
+.claude/
+
+# Secrets and local configuration (keep shareable examples)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.mobileprovision
+
+# Expo and generated app builds
+.expo/
+dist/
+dist-android/
+web-build/
+expo-env.d.ts
+farm-app/android/
+farm-app/ios/
+.kotlin/
+.metro-health-check*
+
+# Test, cache, and compiler output
+coverage/
+.cache/
+*.tsbuildinfo
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+*.orig.*

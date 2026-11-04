@@ -1,0 +1,47 @@
+import React, { useState, useEffect } from "react";
+import { View, Image, StyleProp, ViewStyle } from "react-native";
+import { LocalizedText as Text } from "../i18n/I18n";
+import { Icon } from "./Icon";
+import { imageUrl } from "../services/api";
+import { s } from "../styles/appStyles";
+import { mint } from "../theme/colors";
+export function ProductPhoto({
+  image,
+  style,
+}: {
+  image?: string;
+  style?: StyleProp<ViewStyle>;
+}) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [image]);
+  return (
+    <View
+      style={[
+        {
+          height: 175,
+          backgroundColor: mint,
+          overflow: "hidden",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        style,
+      ]}
+    >
+      {image && !failed ? (
+        <Image
+          accessibilityLabel="Farmer's product photo"
+          source={{ uri: imageUrl(image) }}
+          onError={() => setFailed(true)}
+          style={{ width: "100%", height: "100%" }}
+        />
+      ) : (
+        <>
+          <Icon name="leaf-outline" size={35} />
+          <Text style={s.muted}>
+            {failed ? "Photo unavailable" : "No photo added"}
+          </Text>
+        </>
+      )}
+    </View>
+  );
+}

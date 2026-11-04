@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Harvest",
+    "slug": "harvest-marketplace",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/harvest-logo.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#EAF5E3",
+        "foregroundImage": "./assets/harvest-logo.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/harvest-logo.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Harvest to select farm and delivery pins and share your position during an active delivery."
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}

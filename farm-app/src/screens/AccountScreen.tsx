@@ -5,6 +5,7 @@ import { api, ApiUser } from "../services/api";
 import { Button } from "../components/Button";
 import { Field } from "../components/Field";
 import { Feedback } from "../components/Feedback";
+import { ApprovalStatusBadge } from "../components/ApprovalStatusBadge";
 import { s } from "../styles/appStyles";
 export function AccountScreen({
   user,
@@ -12,7 +13,7 @@ export function AccountScreen({
   onLogout,
 }: {
   user: ApiUser;
-  onUserChanged: () => Promise<void>;
+  onUserChanged: () => Promise<ApiUser>;
   onLogout: () => void;
 }) {
   const [name, setName] = useState(user.name),
@@ -50,9 +51,13 @@ export function AccountScreen({
       <Text style={s.body}>
         {user.email} · {user.role === "producer" ? "Farmer" : user.role}
       </Text>
-      <Text style={s.badge}>
-        {user.approved ? "Approved" : "Awaiting approval"}
-      </Text>
+      {user.role === "producer" ? (
+        <ApprovalStatusBadge approved={user.approved} />
+      ) : (
+        <Text style={s.badge}>
+          {user.approved ? "Approved" : "Awaiting approval"}
+        </Text>
+      )}
       <Feedback error={error} />
       {!!message && <Text style={s.body}>{message}</Text>}
       <Field label="Full name" value={name} onChange={setName} />

@@ -6,6 +6,7 @@ import { ProductForm } from "./ProductForm";
 import { ProductPhoto } from "../components/ProductPhoto";
 import { Button } from "../components/Button";
 import { Feedback } from "../components/Feedback";
+import { ApprovalStatusBadge } from "../components/ApprovalStatusBadge";
 import { s } from "../styles/appStyles";
 export function FarmerProductsScreen({
   user,
@@ -13,7 +14,7 @@ export function FarmerProductsScreen({
   onChanged,
 }: {
   user: ApiUser;
-  onRefreshAccount: () => Promise<void>;
+  onRefreshAccount: () => Promise<ApiUser>;
   onChanged: () => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
@@ -23,6 +24,7 @@ export function FarmerProductsScreen({
     [editing, setEditing] = useState<ApiProduct | null | undefined>(undefined),
     [deleting, setDeleting] = useState(""),
     [busy, setBusy] = useState(false),
+    [statusMessage, setStatusMessage] = useState(""),
     [page, setPage] = useState(1),
     [total, setTotal] = useState(0);
   const load = async () => {
@@ -39,8 +41,25 @@ export function FarmerProductsScreen({
     }
   };
   useEffect(() => {
-    void load();
-  }, [page]);
+    if (user.approved) void load();
+  }, [page, user.approved]);
+  const checkApproval = async () => {
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    setStatusMessage("");
+    try {
+      const latest = await onRefreshAccount();
+      if (!latest.approved)
+        setStatusMessage(
+          "Status checked. Your farm is still awaiting administrator approval.",
+        );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
   const change = async (action: () => Promise<unknown>) => {
     setBusy(true);
     setError("");
@@ -58,17 +77,22 @@ export function FarmerProductsScreen({
   if (!user.approved)
     return (
       <View style={s.panel}>
+        <ApprovalStatusBadge approved={false} />
         <Text style={s.heading}>Your farm is awaiting approval</Text>
         <Text style={s.body}>
           Your account is verified. An administrator needs to approve your farm
           before you can publish products.
         </Text>
         <Feedback error={error} />
+        {!!statusMessage && (
+          <Text accessibilityLiveRegion="polite" style={s.body}>
+            {statusMessage}
+          </Text>
+        )}
         <Button
-          label="Check approval status"
-          onPress={() => {
-            void onRefreshAccount().catch((e) => setError(e.message));
-          }}
+          label={busy ? "Checking approval..." : "Check approval status"}
+          disabled={busy}
+          onPress={() => void checkApproval()}
         />
       </View>
     );
@@ -87,9 +111,10 @@ export function FarmerProductsScreen({
   return (
     <View style={{ gap: 16 }}>
       <View style={s.between}>
-        <View>
+        <View style={{ gap: 8 }}>
           <Text style={s.heading}>My products</Text>
           <Text style={s.muted}>{user.farmName}</Text>
+          <ApprovalStatusBadge approved />
         </View>
         <Button label="Add product" onPress={() => setEditing(null)} />
       </View>

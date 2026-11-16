@@ -42,7 +42,9 @@ function AppContent() {
     setRevision((value) => value + 1);
   }), []);
   const refreshUser = async () => {
-    setUser((await api.me()).user);
+    const latest = (await api.me()).user;
+    setUser(latest);
+    return latest;
   };
   const authenticated = (u: ApiUser) => {
     void setLanguage(u.language).catch(() => {});
@@ -257,7 +259,9 @@ function AppContent() {
                 savedOnly={page === "Saved"}
                 onAdd={add}
                 onSignIn={() => navigate("Sign in")}
-                onUserChanged={refreshUser}
+                onUserChanged={async () => {
+                  await refreshUser();
+                }}
               />
             )}
             {page === "Sign in" && (

@@ -485,6 +485,10 @@ const waitFor = async (predicate) => {
   assert.ok(text(app.root).includes("Welcome to Harvest"));
   assert.equal(button("Basket"), undefined);
   assert.ok(!text(app.root).includes("Authentication required"));
+  await User.updateOne(
+    { email: "farmer@test.example" },
+    { $set: { approved: false } },
+  );
   await fill("Email address", "farmer@test.example");
   await fill("Password (at least 12 characters)", "incorrect-password");
   await act(async () => {
@@ -504,7 +508,19 @@ const waitFor = async (predicate) => {
     );
     await buttons[buttons.length - 1].props.onPress();
   });
+  await waitFor(() => Boolean(button("Check approval status")));
+  assert.ok(text(app.root).includes("Awaiting approval"));
+  await click("Check approval status");
+  await waitFor(() =>
+    text(app.root).includes("Status checked. Your farm is still awaiting administrator approval."),
+  );
+  await User.updateOne(
+    { email: "farmer@test.example" },
+    { $set: { approved: true } },
+  );
+  await click("Check approval status");
   await waitFor(() => Boolean(button("Add product")));
+  assert.ok(text(app.root).includes("Approved"));
   await click("Add product");
   await click("Save product");
   assert.equal(await Product.countDocuments(), 0, "Invalid form does not save");
